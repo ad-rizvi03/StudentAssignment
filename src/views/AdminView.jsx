@@ -59,8 +59,9 @@ export default function AdminView({ currentUser, users, assignments, onUpdate, l
       pendingTimerRef.current = null
     }
 
-    // set pending delete info and start timer to finalize
-    setPendingDelete({ item: deleteTarget, index: idx })
+  // set pending delete info and start timer to finalize
+  // store the post-delete snapshot so undo can reliably reconstruct the previous state
+  setPendingDelete({ item: deleteTarget, index: idx, prev: updated })
     pendingTimerRef.current = setTimeout(() => {
       setPendingDelete(null)
       pendingTimerRef.current = null
@@ -77,8 +78,9 @@ export default function AdminView({ currentUser, users, assignments, onUpdate, l
       pendingTimerRef.current = null
     }
 
-    // restore to original index
-    const restored = [...assignments]
+  // restore to original index using the stored post-delete snapshot (prev) if available
+  const base = pendingDelete.prev ?? assignments
+  const restored = [...base]
     const insertIndex = Math.min(Math.max(0, pendingDelete.index ?? restored.length), restored.length)
     restored.splice(insertIndex, 0, pendingDelete.item)
     onUpdate(restored)

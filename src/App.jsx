@@ -67,6 +67,19 @@ export default function App() {
     })
   }
 
+  function handleAddCourse(course) {
+    const next = {
+      id: `c_${Date.now()}`,
+      title: course.title || 'Untitled Course',
+      code: course.code || 'CXXX',
+      term: course.term || 'Fall 2025',
+      instructorId: course.instructorId || currentUser.id,
+      studentIds: course.studentIds || []
+    }
+    setCourses(prev => [...(prev || []), next])
+    return next
+  }
+
   function handleResetDemoData() {
     // ask user for confirmation before wiping local data
     const ok = window.confirm('Reset demo data? This will clear any local changes and restore seeded demo data.')
@@ -223,7 +236,7 @@ export default function App() {
 
         <main>
           {view === 'courses' && (
-            <CoursesView currentUser={currentUser} courses={courses} users={users} onOpenCourse={openCourse} />
+            <CoursesView currentUser={currentUser} courses={courses} users={users} onOpenCourse={openCourse} layout={currentLayout} onAddCourse={handleAddCourse} />
           )}
 
           {view === 'course' && selectedCourse && (

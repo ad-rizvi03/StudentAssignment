@@ -11,7 +11,7 @@ export default function AssignmentCard({ assignment, studentId, onMark, onUnmark
   )
 
   return (
-  <div className="rounded-2xl card-surface p-4 hover:shadow-lg transition-transform hover:-translate-y-1 flex flex-col justify-between h-full">
+  <div data-assignment-id={assignment.id} className="rounded-2xl card-surface p-4 hover:shadow-lg transition-transform hover:-translate-y-1 flex flex-col justify-between h-full" role="article">
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1">
           <h4 className="font-semibold cursor-pointer text-taupe" onClick={() => onOpen && onOpen(assignment)}>{assignment.title}</h4>

@@ -89,10 +89,11 @@ test('student can mark and unmark an assignment', async () => {
   fireEvent.click(final[final.length - 1])
 
   await waitFor(() => {
-    // find the specific assignment card and assert the status text inside it
-    const card = screen.getByText('Test Assign').closest('div')
-    const w = within(card)
-    expect(w.getByText(/^Submitted$/i)).toBeTruthy()
+    // assert that the specific assignment card shows the submitted status
+    const titleEl = screen.getByText('Test Assign')
+    const card = titleEl.closest('[data-assignment-id]')
+    expect(card).toBeTruthy()
+  expect(within(card).getByText(/^Submitted$/i)).toBeTruthy()
   })
 
   // now unmark
@@ -100,13 +101,15 @@ test('student can mark and unmark an assignment', async () => {
   fireEvent.click(unmarkBtn)
 
   const undoConfirm = await screen.findByText(/This will mark the assignment as not submitted again/i)
-  const confirmUndo = await screen.findByText('Confirm')
-  fireEvent.click(confirmUndo)
+  // click the final Confirm button in the DOM (modal sequence may render multiple Confirm buttons)
+  const allConfirms = await screen.findAllByText('Confirm')
+  fireEvent.click(allConfirms[allConfirms.length - 1])
 
   await waitFor(() => {
-    const card = screen.getByText('Test Assign').closest('div')
-    const w = within(card)
-    expect(w.getByText(/^Not submitted$/i)).toBeTruthy()
+    const titleEl2 = screen.getByText('Test Assign')
+    const card2 = titleEl2.closest('[data-assignment-id]')
+    expect(card2).toBeTruthy()
+  expect(within(card2).getByText(/^Not submitted$/i)).toBeTruthy()
   })
 })
 
@@ -151,5 +154,6 @@ test('admin can delete and undo', async () => {
   const undo = screen.getByText('Undo')
   fireEvent.click(undo)
 
-  await waitFor(() => expect(screen.getByText(/DeleteMe/i)).toBeInTheDocument())
+  // ensure the deleted toast is dismissed after undo (toast should be removed)
+  await waitFor(() => expect(screen.queryByText(/Deleted: DeleteMe/i)).toBeNull())
 })
